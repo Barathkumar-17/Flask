@@ -40,5 +40,13 @@ def update_expense(id):
             return jsonify(expenses[i]),201
     return jsonify({"error": "Expense not found"}),404
 
+@app.route('/expenses/<int:id>',methods=['DELETE'])
+def delete_expense(id):
+    for i in range(0,len(expenses)):
+        if expenses[i]["id"]==id:
+            expenses.pop(i);
+            return jsonify({"Deleted" : f"Removed expense with id {id}"}) ,200
+    return jsonify({"Error" :  "not found"}),404
+
 if __name__ == '__main__':
     app.run(debug=True)
