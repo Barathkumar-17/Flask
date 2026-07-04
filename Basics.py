@@ -4,6 +4,8 @@ con=sqlite3.connect('test.db',check_same_thread=False)
 curr=con.cursor()
 
 app = Flask(__name__)
+app.json.sort_keys = False
+#for making JSON print as required order
 
 @app.route('/')
 def home():
@@ -35,8 +37,8 @@ def add_expense():
     # the select iF null finds last id and then +1 .... 
     con.commit()
     curr.execute("select * from expenses where id= last_insert_rowid();")
-    expense=curr.fetchone()
-    return jsonify(expense),201;
+    row=curr.fetchone()
+    return jsonify({"id":row[0],"amount": row[1],"category":row[2],"date":row[3]}),201;
 
 @app.route('/expenses/<int:expense_id>',methods=['PUT'])
 def update_expense(expense_id):
