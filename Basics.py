@@ -30,5 +30,15 @@ def add_expense():
         "id":expenses[-1]['id']+1,"amount":data['amount'],"category":data['category'] ,"date":data['date'] }
     expenses.append(expense);
     return jsonify(expense),201;
+
+@app.route('/expenses/<int:id>',methods=['PUT'])
+def update_expense(id):
+    for i in range(0,len(expenses)):
+        if expenses[i]["id"]==id:
+            data=request.get_json();
+            expenses[i]={"id":id,"amount":data["amount"],"category":data["category"],"date":data["date"]}
+            return jsonify(expenses[i]),201
+    return jsonify({"error": "Expense not found"}),404
+
 if __name__ == '__main__':
     app.run(debug=True)
