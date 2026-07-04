@@ -51,7 +51,7 @@ def update_expense(expense_id):
 
 @app.route('/expenses/<int:expense_id>',methods=['DELETE'])
 def delete_expense(expense_id):
-    curr.execute(f'delete from expenses where id ={expense_id};')
+    curr.execute('delete from expenses where id =?;',(expense_id,))
     con.commit()
     if(curr.rowcount!=0):
             return jsonify({"Deleted" : f"Removed expense with id {expense_id}"}) ,200
