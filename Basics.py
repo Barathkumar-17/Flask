@@ -49,7 +49,7 @@ def update_expense(expense_id):
     if(curr.rowcount==1):
             curr.execute('select * from expenses where id = ?;',(expense_id,))
             row=curr.fetchone()
-            return jsonify(f"id : {row[0]}, amount : {row[1]} , category : {row[2]}, date : {row[3]}"),200
+            return jsonify({"id":row[0],"amount": row[1],"category":row[2],"date":row[3]}),200
     return jsonify({"error": "Expense not found"}),404
 
 @app.route('/expenses/<int:expense_id>',methods=['DELETE'])
