@@ -37,7 +37,7 @@ def update_expense(id):
         if expenses[i]["id"]==id:
             data=request.get_json();
             expenses[i]={"id":id,"amount":data["amount"],"category":data["category"],"date":data["date"]}
-            return jsonify(expenses[i]),201
+            return jsonify(expenses[i]),200
     return jsonify({"error": "Expense not found"}),404
 
 @app.route('/expenses/<int:id>',methods=['DELETE'])
