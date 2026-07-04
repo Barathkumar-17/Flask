@@ -13,7 +13,10 @@ def home():
 def get_expenses():
     curr.execute('select * from expenses;')
     rows=curr.fetchall()
-    return jsonify(rows)
+    l=[]
+    for i in rows:
+        l.append({"id":i[0],"amount": i[1],"category":i[2],"date":i[3]})
+    return jsonify(l)
 
 @app.route('/expenses/<int:expense_id>')
 def get_expense(expense_id):
