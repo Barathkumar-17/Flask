@@ -28,8 +28,9 @@ def get_expense(expense_id):
 @app.route('/expenses',methods=['POST'])
 def add_expense():
     data=request.get_json();
-    curr.execute(f"insert into expenses values ((SELECT IFNULL(MAX(id), 0) + 1 FROM expenses),{data["amount"]},'{data["category"]}','{data['date']}');")
-    #note the '{}' so it is taken as string very very important
+    curr.execute(f"insert into expenses values ((SELECT IFNULL(MAX(id), 0) + 1 FROM expenses),?,?,?);",
+                    (data["amount"],data["category"],data["date"],))
+    #note there is no '?' rather just ? as it acts a simple placeholder instead of formatting the string into the string
     # the select iF null finds last id and then +1 .... 
     con.commit()
     curr.execute(f"select * from expenses where id= last_insert_rowid();")
