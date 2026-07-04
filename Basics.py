@@ -1,4 +1,7 @@
 from flask import Flask, jsonify,request
+import sqlite3
+con=sqlite3.connect('test.db',check_same_thread=False)
+curr=con.cursor()
 
 app = Flask(__name__)
 
@@ -6,29 +9,31 @@ app = Flask(__name__)
 def home():
     return "Expense Tracker API is running!"
 
-count = 2
-expenses = [
-    {"id": 1, "amount": 250, "category": "food", "date": "2026-06-28"},
-    {"id": 2, "amount": 1200, "category": "rent", "date": "2026-06-01"}
-]
-
 @app.route('/expenses')
 def get_expenses():
-    return jsonify(expenses)
+    curr.execute('select * from expenses;')
+    t=()
+    for row in curr.fetchall():
+        t+=row
+    return jsonify(t)
 
 @app.route('/expenses/<int:expense_id>')
 def get_expense(expense_id):
-    for i in range(0, len(expenses)):
-        if expenses[i]['id'] == expense_id:
-            return jsonify(expenses[i])
+    curr.execute(f'select * from expenses where id = {expense_id};')
+    row=curr.fetchone()
+    if(row):
+        return jsonify(f"id : {row[0]}, amount : {row[1]} , category : {row[2]}, date : {row[3]}")
     return jsonify({"error": "Expense not found"}), 404
 
 @app.route('/expenses',methods=['POST'])
 def add_expense():
     data=request.get_json();
-    expense={
-        "id":expenses[-1]['id']+1,"amount":data['amount'],"category":data['category'] ,"date":data['date'] }
-    expenses.append(expense);
+    curr.execute(f"insert into expenses values ((SELECT IFNULL(MAX(id), 0) + 1 FROM expenses),{data["amount"]},'{data["category"]}','{data['date']}');")
+    #note the '{}' so it is taken as string very very important
+    # the select iF null finds last id and then +1 .... 
+    con.commit()
+    curr.execute(f"select * from expenses where id= last_insert_rowid();")
+    expense=curr.fetchone()
     return jsonify(expense),201;
 
 @app.route('/expenses/<int:id>',methods=['PUT'])
