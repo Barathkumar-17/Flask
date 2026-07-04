@@ -36,13 +36,16 @@ def add_expense():
     expense=curr.fetchone()
     return jsonify(expense),201;
 
-@app.route('/expenses/<int:id>',methods=['PUT'])
-def update_expense(id):
-    for i in range(0,len(expenses)):
-        if expenses[i]["id"]==id:
-            data=request.get_json();
-            expenses[i]={"id":id,"amount":data["amount"],"category":data["category"],"date":data["date"]}
-            return jsonify(expenses[i]),200
+@app.route('/expenses/<int:expense_id>',methods=['PUT'])
+def update_expense(expense_id):
+    data=request.get_json()
+    curr.execute(f"""update expenses set amount={data["amount"]},category='{data["category"]}',date='{data["date"]}'
+                     where id={expense_id};""")
+    con.commit()
+    if(curr.rowcount==1):
+            curr.execute(f'select * from expenses where id = {expense_id};')
+            row=curr.fetchone()
+            return jsonify(f"id : {row[0]}, amount : {row[1]} , category : {row[2]}, date : {row[3]}"),200
     return jsonify({"error": "Expense not found"}),404
 
 @app.route('/expenses/<int:id>',methods=['DELETE'])
