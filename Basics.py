@@ -48,12 +48,12 @@ def update_expense(expense_id):
             return jsonify(f"id : {row[0]}, amount : {row[1]} , category : {row[2]}, date : {row[3]}"),200
     return jsonify({"error": "Expense not found"}),404
 
-@app.route('/expenses/<int:id>',methods=['DELETE'])
-def delete_expense(id):
-    for i in range(0,len(expenses)):
-        if expenses[i]["id"]==id:
-            expenses.pop(i);
-            return jsonify({"Deleted" : f"Removed expense with id {id}"}) ,200
+@app.route('/expenses/<int:expense_id>',methods=['DELETE'])
+def delete_expense(expense_id):
+    curr.execute(f'delete from expenses where id ={expense_id};')
+    con.commit()
+    if(curr.rowcount!=0):
+            return jsonify({"Deleted" : f"Removed expense with id {expense_id}"}) ,200
     return jsonify({"Error" :  "not found"}),404
 
 if __name__ == '__main__':
