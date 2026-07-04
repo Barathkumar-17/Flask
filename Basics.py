@@ -19,7 +19,7 @@ def get_expenses():
 
 @app.route('/expenses/<int:expense_id>')
 def get_expense(expense_id):
-    curr.execute(f'select * from expenses where id = {expense_id};')
+    curr.execute(f'select * from expenses where id = ?;',(expense_id,))
     row=curr.fetchone()
     if(row):
         return jsonify(f"id : {row[0]}, amount : {row[1]} , category : {row[2]}, date : {row[3]}")
