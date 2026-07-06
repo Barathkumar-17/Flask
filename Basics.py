@@ -63,6 +63,9 @@ def add_expense():
 @app.route('/expenses/<int:expense_id>',methods=['PUT'])
 def update_expense(expense_id):
     data=request.get_json()
+    error=validate_json(data)
+    if error:
+        return error;
     curr.execute("""update expenses set amount=?,category=?,date=?where id=?;""",
                      (data["amount"],data["category"],data["date"],expense_id))
     con.commit()
