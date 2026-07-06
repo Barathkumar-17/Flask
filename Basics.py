@@ -28,9 +28,7 @@ def get_expense(expense_id):
         return jsonify({"id":row[0],"amount": row[1],"category":row[2],"date":row[3]})
     return jsonify({"error": "Expense not found"}), 404
 
-@app.route('/expenses',methods=['POST'])
-def add_expense():
-    data=request.get_json();
+def validate_json(data):
     if not data:
         return jsonify({"Error":"Body not found"}),400
     if "amount" not in data : 
@@ -45,6 +43,14 @@ def add_expense():
         return jsonify({"Error" : "Date not found"}),400
     elif type(data["date"])!=str:
         return jsonify({"Error":"Invalid Date"}),400
+    return None;
+
+@app.route('/expenses',methods=['POST'])
+def add_expense():
+    data=request.get_json();
+    error = validate_json(data);
+    if error:
+        return error;
     curr.execute("insert into expenses values ((SELECT IFNULL(MAX(id), 0) + 1 FROM expenses),?,?,?);",
                     (data["amount"],data["category"],data["date"],))
     #note there is no '?' rather just ? as it acts a simple placeholder instead of formatting the string into the string
